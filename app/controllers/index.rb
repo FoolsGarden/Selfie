@@ -70,11 +70,23 @@ get '/users/:id/update' do
 end
 
 post '/upload' do
-  
+  user = User.find(session[:id])
   User.find(session[:id]).photos.create(params[:photo])
 
-  redirect to '/users_home/:id'
+  redirect to "/users_home/#{user.id}"
 
+end
+
+post '/delete/image' do 
+
+  user = User.find(session[:id])
+  puts "*" * 100
+  image = params[:image]
+  if image
+    delete_photo = Photo.find(image)
+    delete_photo.destroy
+  end
+  redirect to "/users_home/#{user.id}"
 end
 
 post '/users/:id/update' do
@@ -96,6 +108,7 @@ end
 
 get "/delete/:id" do 
   @user = User.find(session[:id])
+  @user.photos.each {|photo| photo.destroy}
   @user.destroy
   redirect to '/users'
 end
